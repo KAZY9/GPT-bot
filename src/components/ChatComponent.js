@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkDown from 'react-markdown';
 import { chat } from '../api/axios';
 import styled from 'styled-components';
 
@@ -9,7 +10,11 @@ const Button = styled.button`
         border: 1px solid gray;
         border-radius: 50px;
         z-index: 9999;
-    `;
+        &:hover {
+            background-color: rgb(100, 100, 100, 0.3);
+            color: white;
+        }
+`;
 
 const ChatBox = styled.textarea`
     width: 70%;
@@ -61,6 +66,14 @@ const ChatComponent = () => {
     const [ isLoading, setIsLoading ] = useState(false);
     const [ warning, setWarning ] = useState('');
 
+    const chatWindow = useRef(null);
+    useEffect(() => {
+        if(chatWindow.current) {
+            const { scrollHeight } = chatWindow.current;
+            chatWindow.current.scrollTop = scrollHeight
+        }
+    });
+
     // メッセージを更新
     const handleMessageChange = (e)  => {
         setMessage(e.target.value);
@@ -78,7 +91,7 @@ const ChatComponent = () => {
     
         // chat.js にメッセージを渡して API から回答を取得
         try {
-            const responseText = await chat(message);
+            const responseText = await chat(message, chatHistory);
             const newHistory = chatHistory.concat({message: message, answer: responseText});
             setChatHistory(newHistory);
             setMessage('');
@@ -88,15 +101,21 @@ const ChatComponent = () => {
         }  
     }
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && e.shiftKey) {
+            e.preventDefault();
+            handleSubmit(e);
+        }
+    }
+
     return (
         <Element>
             <form onSubmit={handleSubmit}>
-                <label>
                 <ChatBox
                     value={message}
                     onChange={handleMessageChange}
+                    onKeyPress={handleKeyPress}
                 />
-                </label>
                 <ButtonArea>
                     <Button
                         type="submit"
@@ -107,6 +126,7 @@ const ChatComponent = () => {
             </form>
             {warning}
             <Line />
+            <div ref={chatWindow} style={{ overflowY: 'auto', height: '400px' }}>
             {chatHistory.map(({message, answer}, index) => (
                 <React.Fragment key={index}>
                     <TextArea>
@@ -115,10 +135,11 @@ const ChatComponent = () => {
                     </TextArea>
                     <TextArea>
                         <Label>回答:</Label>
-                        <Sentence>{answer}</Sentence>
+                        <Sentence><ReactMarkDown>{answer}</ReactMarkDown></Sentence>
                     </TextArea>
                 </React.Fragment>
             ))}
+            </div>
         </Element>
     );
 }
