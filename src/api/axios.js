@@ -21,6 +21,7 @@ export const chat = async ( message ) => {
       }
     });
     // 回答の取得
+    console.log(response.data)
     return response.data.choices[0].message.content;
 
   } catch ( error ) {
