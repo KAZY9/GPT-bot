@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkDown from 'react-markdown';
-import { chat } from '../api/axios';
 import styled from 'styled-components';
+// import { chat } from '../api/axios';
+import { chat_fetch } from '../api/fetch';
 
 const Button = styled.button`
         background-color: lightgray;
@@ -50,7 +51,7 @@ const Label = styled.h3`
     margin: 3px 0px;
 `;
 
-const Sentence = styled.p`
+const Sentence = styled.div`
     margin: 5px 0px;
 `;
 
@@ -91,14 +92,18 @@ const ChatComponent = () => {
     
         // chat.js にメッセージを渡して API から回答を取得
         try {
-            const responseText = await chat(message, chatHistory);
-            const newHistory = chatHistory.concat({message: message, answer: responseText});
-            setChatHistory(newHistory);
+            await chat_fetch(message, chatHistory, setChatHistory, setIsLoading);
+            // const responseText = await chat(message, chatHistory);
+            // const newHistory = chatHistory.concat({message: message, answer: responseText});
+            // setChatHistory(newHistory);
+             // if (responseText) {
+            //     setIsLoading(false);
+            // }
             setMessage('');
-            setIsLoading(false);
         } catch (error) {
             setWarning('エラーが発生しました。')
-        }  
+            // setIsLoading(false);
+        }
     }
 
     const handleKeyPress = (e) => {
@@ -135,7 +140,9 @@ const ChatComponent = () => {
                     </TextArea>
                     <TextArea>
                         <Label>回答:</Label>
-                        <Sentence><ReactMarkDown>{answer}</ReactMarkDown></Sentence>
+                        <Sentence>
+                            <ReactMarkDown>{answer}</ReactMarkDown>
+                        </Sentence>
                     </TextArea>
                 </React.Fragment>
             ))}

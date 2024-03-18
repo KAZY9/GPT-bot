@@ -4,8 +4,6 @@ export const chat = async ( message, chatHistory ) => {
   const API_URL = 'https://api.openai.com/v1/chat/completions';
   const MODEL = 'gpt-3.5-turbo';
   const API_KEY = require('../apikey');
-  console.log(message);
-  console.log(chatHistory);
   
   try {
     const response = await axios.post(API_URL, {
@@ -32,7 +30,7 @@ export const chat = async ( message, chatHistory ) => {
       }
     });
     // 回答の取得
-    console.log(response.data)
+    // console.log(response.data)
     return response.data.choices[0].message.content;
 
   } catch ( error ) {
