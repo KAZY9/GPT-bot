@@ -92,7 +92,10 @@ const ChatComponent = () => {
     
         // chat.js にメッセージを渡して API から回答を取得
         try {
+            // fetchでAPIを使う場合↓
             await chat_fetch(message, chatHistory, setChatHistory, setIsLoading);
+
+            // axiosでAPIを使う場合↓
             // const responseText = await chat(message, chatHistory);
             // const newHistory = chatHistory.concat({message: message, answer: responseText});
             // setChatHistory(newHistory);
@@ -102,7 +105,7 @@ const ChatComponent = () => {
             setMessage('');
         } catch (error) {
             setWarning('エラーが発生しました。')
-            // setIsLoading(false);
+            setIsLoading(false);
         }
     }
 
