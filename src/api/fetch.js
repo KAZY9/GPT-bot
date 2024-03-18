@@ -45,12 +45,12 @@ export const chat_fetch = async ( message, chatHistory, setChatHistory, setIsLoa
                 const newlineIndex = buffer.indexOf("\n"); //改行コードの位置を取得
                 if (newlineIndex === -1) break;
 
-                const line = buffer.slice(0, newlineIndex);
-                buffer = buffer.slice(newlineIndex + 1);
+                const line = buffer.slice(0, newlineIndex); //改行コードの位置までの要素を取り出す。
+                buffer = buffer.slice(newlineIndex + 1); //line要素以降の要素だけ取り出す。
 
                 if (line.startsWith("data:") && !line.includes("[DONE]")) {
                     try {
-                        const jsonData = JSON.parse(line.slice(5));
+                        const jsonData = JSON.parse(line.slice(5)); // 5文字目（インデックス4の文字）以降の文章をオブジェクト化
                         if (jsonData.choices && jsonData.choices[0].delta && jsonData.choices[0].delta.content) {
                             completeAnswer += jsonData.choices[0].delta.content;
                             const newChatHistory = chatHistory.concat({message: message, answer: completeAnswer});
